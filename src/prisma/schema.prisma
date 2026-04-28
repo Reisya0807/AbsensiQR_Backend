@@ -1,0 +1,106 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // atau mysql
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SEKRETARIS
+  PESERTA
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // hashed dengan bcrypt (BUKAN JWT!)
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  peserta   Peserta?
+  sekretaris Sekretaris?
+}
+
+model Peserta {
+  id          String   @id @default(uuid())
+  npm         String   @unique
+  nama        String
+  email       String?
+  portofolio  String?  @db.Text
+  firstLogin  Boolean  @default(true)
+  
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  attendances Attendance[]
+}
+
+model Sekretaris {
+  id        String   @id @default(uuid())
+  nama      String
+  npm       String?  @unique
+  
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  qrTokens  QRToken[]
+}
+
+model QRToken {
+  id          String    @id @default(uuid())
+  token       String    @unique  // Token unik untuk QR
+  isUsed      Boolean   @default(false)
+  expiresAt   DateTime  // Waktu kadaluarsa QR
+  
+  sekretarisId String
+  sekretaris   Sekretaris @relation(fields: [sekretarisId], references: [id])
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  attendances Attendance[]
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  status     Int      @default(1) // 1 = hadir
+  timestamp  DateTime @default(now())
+  method     String   // "QR_SCAN" atau "MANUAL"
+  
+  pesertaId  String
+  peserta    Peserta  @relation(fields: [pesertaId], references: [id])
+  
+  qrTokenId  String?
+  qrToken    QRToken? @relation(fields: [qrTokenId], references: [id])
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([pesertaId, timestamp])
+}
+
+model Rundown {
+  id          String   @id @default(uuid())
+  judul       String
+  deskripsi   String?  @db.Text
+  waktuMulai  DateTime
+  waktuSelesai DateTime
+  isHighlight Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
