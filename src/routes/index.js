@@ -12,7 +12,7 @@ const rundownController = require('../modules/rundown/rundown.controller');
 const pesertaController = require('../modules/peserta/peserta.controller');
 
 const { registerSchema, loginSchema } = require('../modules/auth/auth.validation');
-const { updateProfileSchema, updatePortfolioSchema } = require('../modules/users/user.validation');
+const { updateProfileSchema, updatePortfolioSchema, changePasswordSchema, resetPasswordSchema } = require('../modules/users/user.validation');
 const { scanQRSchema, manualAttendanceSchema } = require('../modules/attendance/attendance.validation');
 const { createRundownSchema, updateRundownSchema } = require('../modules/rundown/rundown.validation');
 
@@ -26,6 +26,8 @@ router.post('/auth/login', validate(loginSchema), authController.login);
 router.get('/users/profile', authenticate, userController.getProfile);
 router.put('/users/profile', authenticate, validate(updateProfileSchema), userController.updateProfile);
 router.put('/users/portfolio', authenticate, validate(updatePortfolioSchema), userController.updatePortfolio);
+router.put('/users/change-password', authenticate, validate(changePasswordSchema), userController.changePassword);
+router.post('/users/reset-password', authenticate, authorize('SEKRETARIS'), validate(resetPasswordSchema), userController.resetPassword);
 
 // --- QR Routes (Sekretaris only) ---
 router.post('/qr/generate', authenticate, authorize('SEKRETARIS'), qrController.generateQR);
@@ -44,6 +46,6 @@ router.delete('/rundown/:id', authenticate, authorize('SEKRETARIS'), rundownCont
 
 // --- Peserta Routes (Sekretaris only) ---
 router.get('/peserta', authenticate, authorize('SEKRETARIS'), pesertaController.getAll);
-router.get('/peserta/:id', authenticate, authorize('SEKRETARIS'), pesertaController.getById);
+router.get('/peserta/:userId', authenticate, authorize('SEKRETARIS'), pesertaController.getById);
 
 module.exports = router;

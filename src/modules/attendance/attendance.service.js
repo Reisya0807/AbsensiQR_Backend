@@ -19,7 +19,7 @@ class AttendanceService {
         });
 
         if (existingAttendance) {
-            throw new Error('Anda sudah absen dengan QR Code ini');
+            throw new Error('Anda sudah absen');
         }
 
         const attendance = await prisma.attendance.create({

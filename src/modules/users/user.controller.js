@@ -37,6 +37,30 @@ class UserController {
       next(error);
     }
   }
+
+  async changePassword(req, res, next) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      await userService.changePassword(req.user.userId, oldPassword, newPassword);
+      return successResponse(res, 200, 'Password berhasil diubah');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      if (req.user.role !== 'SEKRETARIS') {
+        return errorResponse(res, 403, 'Hanya sekretaris yang bisa reset password');
+      }
+
+      const { userId } = req.body;
+      const result = await userService.resetPassword(userId);
+      return successResponse(res, 200, 'Password berhasil direset', result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UserController();

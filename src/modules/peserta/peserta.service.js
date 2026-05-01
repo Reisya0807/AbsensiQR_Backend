@@ -2,39 +2,76 @@ const prisma = require('../../config/database');
 
 class PesertaService {
     async getAll(filters = {}) {
-        const { search, page = 1, limit = 50 } = filters;
+        const { search, role, page = 1, limit = 50 } = filters;
 
         const where = {};
 
+        if (role) {
+            where.role = role;
+        } else {
+            where.role = 'PESERTA';
+        }
+
+        // Search by username, nama, npm, email
         if (search) {
             where.OR = [
-                { nama: { contains: search, mode: 'insensitive' } },
-                { npm: { contains: search } },
-                { email: { contains: search, mode: 'insensitive' } },
+                { username: { contains: search, mode: 'insensitive' } },
+                {
+                    peserta: {
+                        OR: [
+                            { nama: { contains: search, mode: 'insensitive' } },
+                            { npm: { contains: search } },
+                            { email: { contains: search, mode: 'insensitive' } },
+                        ],
+                    },
+                },
             ];
         }
 
         const skip = (page - 1) * limit;
 
-        const [peserta, total] = await Promise.all([
-            prisma.peserta.findMany({
+        const [users, total] = await Promise.all([
+            prisma.user.findMany({
                 where,
-                include: {
-                    _count: {
-                        select: { attendances: true },
+                select: {
+                    id: true,
+                    username: true,
+                    role: true,
+                    createdAt: true,
+                    peserta: {
+                        select: {
+                            id: true,
+                            npm: true,
+                            nama: true,
+                            email: true,
+                            portofolio: true,
+                            firstLogin: true,
+                            _count: {
+                                select: { attendances: true },
+                            },
+                        },
                     },
                 },
                 orderBy: {
-                    nama: 'asc',
+                    createdAt: 'desc',
                 },
                 skip,
                 take: parseInt(limit),
             }),
-            prisma.peserta.count({ where }),
+            prisma.user.count({ where }),
         ]);
 
+        const transformedData = users.map((user) => ({
+            userId: user.id,
+            username: user.username,
+            role: user.role,
+            createdAt: user.createdAt,
+            peserta: user.peserta || null,
+            totalAbsensi: user.peserta?._count?.attendances || 0,
+        }));
+
         return {
-            data: peserta,
+            data: transformedData,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
@@ -44,23 +81,54 @@ class PesertaService {
         };
     }
 
-    async getById(id) {
-        const peserta = await prisma.peserta.findUnique({
-            where: { id },
-            include: {
-                attendances: {
-                    orderBy: {
-                        timestamp: 'desc',
+    async getById(userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                username: true,
+                role: true,
+                createdAt: true,
+                updatedAt: true,
+                peserta: {
+                    include: {
+                        attendances: {
+                            orderBy: {
+                                timestamp: 'desc',
+                            },
+                            take: 50,
+                        },
+                        _count: {
+                            select: { attendances: true },
+                        },
                     },
                 },
             },
         });
 
-        if (!peserta) {
-            throw new Error('Peserta tidak ditemukan');
+        if (!user) {
+            throw new Error('User tidak ditemukan');
         }
 
-        return peserta;
+        return {
+            userId: user.id,
+            username: user.username,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            peserta: user.peserta
+                ? {
+                    id: user.peserta.id,
+                    npm: user.peserta.npm,
+                    nama: user.peserta.nama,
+                    email: user.peserta.email,
+                    portofolio: user.peserta.portofolio,
+                    firstLogin: user.peserta.firstLogin,
+                    totalAbsensi: user.peserta._count.attendances,
+                    recentAttendances: user.peserta.attendances,
+                }
+                : null,
+        };
     }
 }
 
