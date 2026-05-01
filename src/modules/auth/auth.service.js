@@ -4,7 +4,7 @@ const { generateToken } = require('../../utils/jwt');
 
 class AuthService {
     async register(data) {
-        const { username, password, role, npm, nama, email, npm } = data;
+        const { username, password, role, nama, email, npm } = data;
 
         const hashedPassword = await hashPassword(password);
 

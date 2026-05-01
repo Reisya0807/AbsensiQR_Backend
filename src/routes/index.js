@@ -17,7 +17,7 @@ const { scanQRSchema, manualAttendanceSchema } = require('../modules/attendance/
 const { createRundownSchema, updateRundownSchema } = require('../modules/rundown/rundown.validation');
 
 // ==================== PUBLIC ROUTES ====================
-router.post('/auth/register', validate(registerSchema), authController.register);
+// router.post('/auth/register', validate(registerSchema), authController.register);
 router.post('/auth/login', validate(loginSchema), authController.login);
 
 // ==================== PROTECTED ROUTES ====================

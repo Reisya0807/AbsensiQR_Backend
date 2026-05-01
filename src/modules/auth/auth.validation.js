@@ -15,23 +15,12 @@ const registerSchema = Joi.object({
     'any.only': 'Role harus SEKRETARIS atau PESERTA',
     'any.required': 'Role wajib diisi',
   }),
-  // Untuk PESERTA
-  npm: Joi.when('role', {
-    is: 'PESERTA',
-    then: Joi.string().required().messages({
-      'any.required': 'NPM wajib diisi untuk peserta',
-    }),
-    otherwise: Joi.forbidden(),
-  }),
   nama: Joi.string().required().messages({
     'any.required': 'Nama wajib diisi',
   }),
   email: Joi.string().email().optional(),
-  // Untuk SEKRETARIS
-  npm: Joi.when('role', {
-    is: 'SEKRETARIS',
-    then: Joi.string().optional(),
-    otherwise: Joi.forbidden(),
+  npm: Joi.string().required().messages({
+    'any.required': 'Nama wajib diisi',
   }),
 });
 
