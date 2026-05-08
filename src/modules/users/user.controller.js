@@ -24,20 +24,6 @@ class UserController {
     }
   }
 
-  async updatePortfolio(req, res, next) {
-    try {
-      if (req.user.role !== 'PESERTA') {
-        return errorResponse(res, 403, 'Hanya peserta yang bisa update portfolio');
-      }
-
-      const { portofolio } = req.body;
-      const peserta = await userService.updatePortfolio(req.user.userId, portofolio);
-      return successResponse(res, 200, 'Portfolio berhasil diupdate', peserta);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async changePassword(req, res, next) {
     try {
       const { oldPassword, newPassword } = req.body;

@@ -12,6 +12,12 @@ enum Role {
   PESERTA
 }
 
+enum CertificateType {
+  PESERTA
+  KEJUARAAN
+  PEMATERI
+}
+
 model User {
   id        String   @id @default(uuid())
   username  String   @unique
@@ -29,7 +35,7 @@ model Peserta {
   npm         String   @unique
   nama        String
   email       String?
-  portofolio  String?  @db.Text
+  
   firstLogin  Boolean  @default(true)
   
   userId      String   @unique
@@ -38,8 +44,9 @@ model Peserta {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  attendances Attendance[]
+  attendances  Attendance[]
+  certificates Certificate[]  
+  portfolios   Portfolio[]    
 }
 
 model Sekretaris {
@@ -53,7 +60,6 @@ model Sekretaris {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
   qrTokens  QRToken[]
 }
 
@@ -69,7 +75,6 @@ model QRToken {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // Relations
   attendances Attendance[]
 }
 
@@ -101,4 +106,54 @@ model Rundown {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  startDate   DateTime
+  endDate     DateTime
+  location    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  certificates Certificate[]
+}
+
+model Certificate {
+  id                String          @id @default(uuid())
+  certificateNumber String          @unique
+  certificateType   CertificateType
+  softFile          String          // URL Google Drive
+  issuedAt          DateTime
+  
+  eventId           String
+  event             Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  pesertaId         String
+  peserta           Peserta         @relation(fields: [pesertaId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([pesertaId])
+  @@index([eventId])
+  @@index([certificateType])
+}
+
+model Portfolio {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  link        String?  // URL opsional
+  
+  pesertaId   String
+  peserta     Peserta  @relation(fields: [pesertaId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([pesertaId])
 }

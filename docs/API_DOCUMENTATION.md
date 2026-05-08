@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://localhost:${SESUAI PORT ENV}}/api
+http://localhost:${SESUAI PORT ENV}/api
 ```
 
 ## Table of Contents
@@ -10,9 +10,12 @@ http://localhost:${SESUAI PORT ENV}}/api
 - [Authentication](#authentication)
 - [Auth Endpoints](#auth-endpoints)
 - [User Endpoints](#user-endpoints)
+- [Portfolio Endpoints](#portfolio-endpoints)
 - [QR Code Endpoints](#qr-code-endpoints)
 - [Attendance Endpoints](#attendance-endpoints)
 - [Rundown Endpoints](#rundown-endpoints)
+- [Event Endpoints](#event-endpoints)
+- [Certificate Endpoints](#certificate-endpoints)
 - [Peserta Endpoints](#peserta-endpoints)
 - [Error Codes](#error-codes)
 
@@ -156,7 +159,6 @@ For SEKRETARIS:
       "npm": "253040001",
       "nama": "John Doe",
       "email": "john@example.com",
-      "portofolio": null,
       "firstLogin": true
     }
   }
@@ -200,7 +202,7 @@ For SEKRETARIS:
   "success": true,
   "message": "Login berhasil",
   "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // NAH INI FRONTEND HARUS SIMPAN MAU ITU DI LOCALSTORAGE DLL
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "user": {
       "id": "uuid-here",
       "username": "john_doe",
@@ -211,8 +213,7 @@ For SEKRETARIS:
         "npm": "253040001",
         "nama": "John Doe",
         "email": "john@example.com",
-        "portofolio": null,
-        "firstLogin": true // KALAU FIRST LOGIN INI TAMBAHAN YA
+        "firstLogin": true
       }
     }
   }
@@ -255,7 +256,6 @@ For SEKRETARIS:
       "npm": "2106123456",
       "nama": "John Doe",
       "email": "john@example.com",
-      "portofolio": "https://ajibfirda.us", // CONTOH
       "firstLogin": false
     }
   }
@@ -312,7 +312,6 @@ For SEKRETARIS:
     "npm": "2106123456",
     "nama": "John Doe Updated",
     "email": "newemail@example.com",
-    "portofolio": "https://ajibfirda.us",
     "firstLogin": false
   }
 }
@@ -320,51 +319,7 @@ For SEKRETARIS:
 
 ---
 
-### 5. Update Portfolio
-
-**Endpoint:** `PUT /users/portfolio`
-
-**Authorization:** Required (Bearer Token)
-
-**Roles:** PESERTA only
-
-**Request Body:**
-```json
-{
-  "portofolio": "https://ajibfirda.us"
-}
-```
-
-**Validation Rules:**
-- `portofolio`: Optional, can be empty string
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Portfolio berhasil diupdate",
-  "data": {
-    "id": "peserta-uuid",
-    "npm": "2106123456",
-    "nama": "John Doe",
-    "email": "john@example.com",
-    "portofolio": "https://ajibfirda.us",
-    "firstLogin": false
-  }
-}
-```
-
-**Error Response (403):**
-```json
-{
-  "success": false,
-  "message": "Hanya peserta yang bisa update portfolio"
-}
-```
-
----
-
-### 6. Change Password
+### 5. Change Password
 
 **Endpoint:** `PUT /users/change-password`
 
@@ -418,7 +373,7 @@ For SEKRETARIS:
 
 ---
 
-### 7. Reset Password (Sekretaris Only)
+### 6. Reset Password (Sekretaris Only)
 
 **Endpoint:** `POST /users/reset-password`
 
@@ -429,7 +384,7 @@ For SEKRETARIS:
 **Request Body:**
 ```json
 {
-  "userId": "uuid-of-user-to-reset" // UNTUK DAPETIN INI HARUS GET ALL USER DATA DLU YA JADI INI UUID NYA DARI USER BUKAN PESERTA
+  "userId": "uuid-of-user-to-reset"
 }
 ```
 
@@ -466,9 +421,255 @@ For SEKRETARIS:
 
 ---
 
+## Portfolio Endpoints
+
+### 7. Get My Portfolios
+
+**Endpoint:** `GET /portfolio`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data portfolio berhasil diambil",
+  "data": [
+    {
+      "id": "portfolio-uuid-1",
+      "title": "Website E-Commerce",
+      "description": "Membuat website e-commerce dengan React dan Node.js",
+      "link": "https://github.com/johndoe/ecommerce",
+      "pesertaId": "peserta-uuid",
+      "createdAt": "2024-01-20T10:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z"
+    },
+    {
+      "id": "portfolio-uuid-2",
+      "title": "Mobile App Todo List",
+      "description": "Aplikasi todo list menggunakan React Native",
+      "link": "https://github.com/johndoe/todoapp",
+      "pesertaId": "peserta-uuid",
+      "createdAt": "2024-01-21T14:30:00Z",
+      "updatedAt": "2024-01-21T14:30:00Z"
+    }
+  ]
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang memiliki portfolio"
+}
+```
+
+---
+
+### 8. Get Portfolio by ID
+
+**Endpoint:** `GET /portfolio/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data portfolio berhasil diambil",
+  "data": {
+    "id": "portfolio-uuid-1",
+    "title": "Website E-Commerce",
+    "description": "Membuat website e-commerce dengan React dan Node.js",
+    "link": "https://github.com/johndoe/ecommerce",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-20T10:00:00Z"
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang memiliki portfolio"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Portfolio tidak ditemukan"
+}
+```
+
+---
+
+### 9. Create Portfolio
+
+**Endpoint:** `POST /portfolio`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Request Body:**
+```json
+{
+  "title": "Website E-Commerce",
+  "description": "Membuat website e-commerce dengan React dan Node.js",
+  "link": "https://github.com/johndoe/ecommerce"
+}
+```
+
+**Validation Rules:**
+- `title`: Required, cannot be empty
+- `description`: Required, cannot be empty
+- `link`: Optional, must be valid URL if provided, can be empty string
+
+**Success Response (201):**
+```json
+{
+  "success": true,
+  "message": "Portfolio berhasil dibuat",
+  "data": {
+    "id": "portfolio-uuid-1",
+    "title": "Website E-Commerce",
+    "description": "Membuat website e-commerce dengan React dan Node.js",
+    "link": "https://github.com/johndoe/ecommerce",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-20T10:00:00Z"
+  }
+}
+```
+
+**Note:** Setelah membuat portfolio pertama kali, field `firstLogin` pada peserta akan otomatis berubah menjadi `false`.
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang bisa membuat portfolio"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": [
+    {
+      "field": "title",
+      "message": "Title wajib diisi"
+    }
+  ]
+}
+```
+
+---
+
+### 10. Update Portfolio
+
+**Endpoint:** `PUT /portfolio/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Request Body:**
+```json
+{
+  "title": "Website E-Commerce Updated",
+  "description": "Updated description",
+  "link": "https://github.com/johndoe/ecommerce-v2"
+}
+```
+
+**Validation Rules:**
+- All fields are optional
+- `link`: Must be valid URL if provided, can be empty string
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Portfolio berhasil diupdate",
+  "data": {
+    "id": "portfolio-uuid-1",
+    "title": "Website E-Commerce Updated",
+    "description": "Updated description",
+    "link": "https://github.com/johndoe/ecommerce-v2",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-22T15:00:00Z"
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang bisa update portfolio"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Portfolio tidak ditemukan"
+}
+```
+
+---
+
+### 11. Delete Portfolio
+
+**Endpoint:** `DELETE /portfolio/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Portfolio berhasil dihapus"
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang bisa delete portfolio"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Portfolio tidak ditemukan"
+}
+```
+
+---
+
 ## QR Code Endpoints
 
-### 8. Generate QR Code
+### 12. Generate QR Code
 
 **Endpoint:** `POST /qr/generate`
 
@@ -485,8 +686,8 @@ For SEKRETARIS:
   "message": "QR Code berhasil di-generate",
   "data": {
     "token": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6",
-    "expiresAt": "2024-01-20T10:05:00Z", // kALAU UDAH EXPIRED DI PERLUKAN GENERATE ULG YA UTK SEKRETATIS
-    "qrCodeImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." // BASE64 ENCODED PNG IMAGE YA
+    "expiresAt": "2024-01-20T10:05:00Z",
+    "qrCodeImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
   }
 }
 ```
@@ -508,7 +709,7 @@ For SEKRETARIS:
 
 ## Attendance Endpoints
 
-### 9. Scan QR Code (Absen via QR)
+### 13. Scan QR Code (Absen via QR)
 
 **Endpoint:** `POST /attendance/scan`
 
@@ -580,7 +781,7 @@ For SEKRETARIS:
 
 ---
 
-### 10. Manual Attendance
+### 14. Manual Attendance
 
 **Endpoint:** `POST /attendance/manual`
 
@@ -636,7 +837,7 @@ For SEKRETARIS:
 
 ---
 
-### 11. Get Attendance
+### 15. Get Attendance
 
 **Endpoint:** `GET /attendance`
 
@@ -712,9 +913,9 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
-## Rundown Endpoints (INI IGNORE AJA YA KALAU GA KEPAKE INI AKU TAMBAHAN AJA KALAU BUTUH)
+## Rundown Endpoints
 
-### 12. Get All Rundown
+### 16. Get All Rundown
 
 **Endpoint:** `GET /rundown`
 
@@ -754,7 +955,7 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
-### 13. Get Rundown by ID
+### 17. Get Rundown by ID
 
 **Endpoint:** `GET /rundown/:id`
 
@@ -790,7 +991,7 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
-### 14. Create Rundown
+### 18. Create Rundown
 
 **Endpoint:** `POST /rundown`
 
@@ -858,7 +1059,7 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
-### 15. Update Rundown
+### 19. Update Rundown
 
 **Endpoint:** `PUT /rundown/:id`
 
@@ -910,7 +1111,7 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
-### 16. Delete Rundown
+### 20. Delete Rundown
 
 **Endpoint:** `DELETE /rundown/:id`
 
@@ -936,9 +1137,744 @@ GET /attendance?date=2024-01-20&npm=2106&page=1&limit=50
 
 ---
 
+## Event Endpoints
+
+### 21. Get All Events
+
+**Endpoint:** `GET /event`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA, SEKRETARIS
+
+**Query Parameters:**
+- `search` (optional): Search by event name or description
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 50)
+
+**Example Request:**
+```
+GET /event?search=workshop&page=1&limit=20
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data event berhasil diambil",
+  "data": {
+    "data": [
+      {
+        "id": "event-uuid-1",
+        "name": "Workshop Web Development",
+        "description": "Belajar membuat website dari nol",
+        "startDate": "2024-01-20T08:00:00Z",
+        "endDate": "2024-01-20T17:00:00Z",
+        "location": "Gedung A Lt. 3",
+        "createdAt": "2024-01-10T10:00:00Z",
+        "updatedAt": "2024-01-10T10:00:00Z"
+      },
+      {
+        "id": "event-uuid-2",
+        "name": "Seminar AI dan Machine Learning",
+        "description": "Pengenalan AI dan ML untuk pemula",
+        "startDate": "2024-01-25T09:00:00Z",
+        "endDate": "2024-01-25T15:00:00Z",
+        "location": "Auditorium Utama",
+        "createdAt": "2024-01-12T14:00:00Z",
+        "updatedAt": "2024-01-12T14:00:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 50,
+      "total": 25,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+---
+
+### 22. Get Event by ID
+
+**Endpoint:** `GET /event/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA, SEKRETARIS
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data event berhasil diambil",
+  "data": {
+    "id": "event-uuid-1",
+    "name": "Workshop Web Development",
+    "description": "Belajar membuat website dari nol",
+    "startDate": "2024-01-20T08:00:00Z",
+    "endDate": "2024-01-20T17:00:00Z",
+    "location": "Gedung A Lt. 3",
+    "createdAt": "2024-01-10T10:00:00Z",
+    "updatedAt": "2024-01-10T10:00:00Z"
+  }
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Event tidak ditemukan"
+}
+```
+
+---
+
+### 23. Create Event
+
+**Endpoint:** `POST /event`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Request Body:**
+```json
+{
+  "name": "Workshop Web Development",
+  "description": "Belajar membuat website dari nol",
+  "startDate": "2024-01-20T08:00:00Z",
+  "endDate": "2024-01-20T17:00:00Z",
+  "location": "Gedung A Lt. 3"
+}
+```
+
+**Validation Rules:**
+- `name`: Required, cannot be empty
+- `description`: Optional, can be empty string
+- `startDate`: Required, must be valid ISO 8601 date format
+- `endDate`: Required, must be valid ISO 8601 date format, must be greater than startDate
+- `location`: Optional, can be empty string
+
+**Success Response (201):**
+```json
+{
+  "success": true,
+  "message": "Event berhasil dibuat",
+  "data": {
+    "id": "event-uuid-1",
+    "name": "Workshop Web Development",
+    "description": "Belajar membuat website dari nol",
+    "startDate": "2024-01-20T08:00:00Z",
+    "endDate": "2024-01-20T17:00:00Z",
+    "location": "Gedung A Lt. 3",
+    "createdAt": "2024-01-10T10:00:00Z",
+    "updatedAt": "2024-01-10T10:00:00Z"
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa membuat event"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": [
+    {
+      "field": "name",
+      "message": "Nama event wajib diisi"
+    }
+  ]
+}
+```
+
+---
+
+### 24. Update Event
+
+**Endpoint:** `PUT /event/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Request Body:**
+```json
+{
+  "name": "Workshop Web Development Updated",
+  "description": "Updated description",
+  "startDate": "2024-01-20T09:00:00Z",
+  "endDate": "2024-01-20T18:00:00Z",
+  "location": "Gedung B Lt. 2"
+}
+```
+
+**Validation Rules:**
+- All fields are optional
+- `startDate`: Must be valid ISO 8601 date format if provided
+- `endDate`: Must be valid ISO 8601 date format if provided
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Event berhasil diupdate",
+  "data": {
+    "id": "event-uuid-1",
+    "name": "Workshop Web Development Updated",
+    "description": "Updated description",
+    "startDate": "2024-01-20T09:00:00Z",
+    "endDate": "2024-01-20T18:00:00Z",
+    "location": "Gedung B Lt. 2",
+    "createdAt": "2024-01-10T10:00:00Z",
+    "updatedAt": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa update event"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Event tidak ditemukan"
+}
+```
+
+---
+
+### 25. Delete Event
+
+**Endpoint:** `DELETE /event/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Event berhasil dihapus"
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa delete event"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Event tidak ditemukan"
+}
+```
+
+---
+
+## Certificate Endpoints
+
+### 26. Get My Certificates (Peserta)
+
+**Endpoint:** `GET /certificate/my`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data sertifikat berhasil diambil",
+  "data": [
+    {
+      "id": "certificate-uuid-1",
+      "certificateNumber": "CERT-2024-001",
+      "certificateType": "PESERTA",
+      "softFile": "https://drive.google.com/file/d/xxxxx",
+      "issuedAt": "2024-01-20T10:00:00Z",
+      "eventId": "event-uuid-1",
+      "pesertaId": "peserta-uuid",
+      "createdAt": "2024-01-20T10:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z",
+      "event": {
+        "id": "event-uuid-1",
+        "name": "Workshop Web Development",
+        "description": "Belajar membuat website dari nol",
+        "startDate": "2024-01-20T08:00:00Z",
+        "endDate": "2024-01-20T17:00:00Z",
+        "location": "Gedung A Lt. 3"
+      }
+    },
+    {
+      "id": "certificate-uuid-2",
+      "certificateNumber": "CERT-2024-002",
+      "certificateType": "KEJUARAAN",
+      "softFile": "https://drive.google.com/file/d/yyyyy",
+      "issuedAt": "2024-01-25T15:00:00Z",
+      "eventId": "event-uuid-2",
+      "pesertaId": "peserta-uuid",
+      "createdAt": "2024-01-25T15:00:00Z",
+      "updatedAt": "2024-01-25T15:00:00Z",
+      "event": {
+        "id": "event-uuid-2",
+        "name": "Kompetisi Coding",
+        "description": "Kompetisi pemrograman tingkat nasional",
+        "startDate": "2024-01-25T09:00:00Z",
+        "endDate": "2024-01-25T17:00:00Z",
+        "location": "Auditorium Utama"
+      }
+    }
+  ]
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya peserta yang memiliki sertifikat"
+}
+```
+
+---
+
+### 27. Get All Certificates (Sekretaris)
+
+**Endpoint:** `GET /certificate`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Query Parameters:**
+- `search` (optional): Search by certificate number, nama peserta, or npm
+- `certificateType` (optional): Filter by certificate type (PESERTA, KEJUARAAN, PEMATERI)
+- `eventId` (optional): Filter by event ID
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 50)
+
+**Example Request:**
+```
+GET /certificate?search=john&certificateType=PESERTA&page=1&limit=20
+GET /certificate?eventId=event-uuid-1
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data sertifikat berhasil diambil",
+  "data": {
+    "data": [
+      {
+        "id": "certificate-uuid-1",
+        "certificateNumber": "CERT-2024-001",
+        "certificateType": "PESERTA",
+        "softFile": "https://drive.google.com/file/d/xxxxx",
+        "issuedAt": "2024-01-20T10:00:00Z",
+        "eventId": "event-uuid-1",
+        "pesertaId": "peserta-uuid",
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z",
+        "event": {
+          "id": "event-uuid-1",
+          "name": "Workshop Web Development",
+          "description": "Belajar membuat website dari nol",
+          "startDate": "2024-01-20T08:00:00Z",
+          "endDate": "2024-01-20T17:00:00Z",
+          "location": "Gedung A Lt. 3"
+        },
+        "peserta": {
+          "id": "peserta-uuid",
+          "npm": "2106123456",
+          "nama": "John Doe",
+          "email": "john@example.com"
+        }
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 50,
+      "total": 100,
+      "totalPages": 2
+    }
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa melihat semua sertifikat"
+}
+```
+
+---
+
+### 28. Get Certificate by ID
+
+**Endpoint:** `GET /certificate/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** PESERTA (own certificates only), SEKRETARIS (all certificates)
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data sertifikat berhasil diambil",
+  "data": {
+    "id": "certificate-uuid-1",
+    "certificateNumber": "CERT-2024-001",
+    "certificateType": "PESERTA",
+    "softFile": "https://drive.google.com/file/d/xxxxx",
+    "issuedAt": "2024-01-20T10:00:00Z",
+    "eventId": "event-uuid-1",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-20T10:00:00Z",
+    "event": {
+      "id": "event-uuid-1",
+      "name": "Workshop Web Development",
+      "description": "Belajar membuat website dari nol",
+      "startDate": "2024-01-20T08:00:00Z",
+      "endDate": "2024-01-20T17:00:00Z",
+      "location": "Gedung A Lt. 3"
+    },
+    "peserta": {
+      "id": "peserta-uuid",
+      "npm": "2106123456",
+      "nama": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+**Error Response (403) - For PESERTA accessing other's certificate:**
+```json
+{
+  "success": false,
+  "message": "Anda tidak memiliki akses ke sertifikat ini"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Sertifikat tidak ditemukan"
+}
+```
+
+---
+
+### 29. Get Certificates by Peserta ID (Sekretaris)
+
+**Endpoint:** `GET /certificate/peserta/:pesertaId`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Data sertifikat berhasil diambil",
+  "data": [
+    {
+      "id": "certificate-uuid-1",
+      "certificateNumber": "CERT-2024-001",
+      "certificateType": "PESERTA",
+      "softFile": "https://drive.google.com/file/d/xxxxx",
+      "issuedAt": "2024-01-20T10:00:00Z",
+      "eventId": "event-uuid-1",
+      "pesertaId": "peserta-uuid",
+      "createdAt": "2024-01-20T10:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z",
+      "event": {
+        "id": "event-uuid-1",
+        "name": "Workshop Web Development",
+        "description": "Belajar membuat website dari nol",
+        "startDate": "2024-01-20T08:00:00Z",
+        "endDate": "2024-01-20T17:00:00Z",
+        "location": "Gedung A Lt. 3"
+      }
+    }
+  ]
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa melihat sertifikat peserta"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Peserta tidak ditemukan"
+}
+```
+
+---
+
+### 30. Create Certificate
+
+**Endpoint:** `POST /certificate`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Request Body:**
+```json
+{
+  "certificateNumber": "CERT-2024-001",
+  "certificateType": "PESERTA",
+  "softFile": "https://drive.google.com/file/d/xxxxx",
+  "issuedAt": "2024-01-20T10:00:00Z",
+  "eventId": "event-uuid-1",
+  "pesertaId": "peserta-uuid"
+}
+```
+
+**Validation Rules:**
+- `certificateNumber`: Required, cannot be empty
+- `certificateType`: Required, must be one of: PESERTA, KEJUARAAN, PEMATERI
+- `softFile`: Required, must be valid URL (Google Drive link)
+- `issuedAt`: Required, must be valid ISO 8601 date format
+- `eventId`: Required, event must exist
+- `pesertaId`: Required, peserta must exist
+
+**Success Response (201):**
+```json
+{
+  "success": true,
+  "message": "Sertifikat berhasil dibuat",
+  "data": {
+    "id": "certificate-uuid-1",
+    "certificateNumber": "CERT-2024-001",
+    "certificateType": "PESERTA",
+    "softFile": "https://drive.google.com/file/d/xxxxx",
+    "issuedAt": "2024-01-20T10:00:00Z",
+    "eventId": "event-uuid-1",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-20T10:00:00Z",
+    "event": {
+      "id": "event-uuid-1",
+      "name": "Workshop Web Development",
+      "description": "Belajar membuat website dari nol",
+      "startDate": "2024-01-20T08:00:00Z",
+      "endDate": "2024-01-20T17:00:00Z",
+      "location": "Gedung A Lt. 3"
+    },
+    "peserta": {
+      "id": "peserta-uuid",
+      "npm": "2106123456",
+      "nama": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa membuat sertifikat"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Event tidak ditemukan"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Peserta tidak ditemukan"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": [
+    {
+      "field": "certificateType",
+      "message": "Tipe sertifikat harus PESERTA, KEJUARAAN, atau PEMATERI"
+    }
+  ]
+}
+```
+
+---
+
+### 31. Update Certificate
+
+**Endpoint:** `PUT /certificate/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Request Body:**
+```json
+{
+  "certificateNumber": "CERT-2024-001-UPDATED",
+  "certificateType": "KEJUARAAN",
+  "softFile": "https://drive.google.com/file/d/yyyyy",
+  "issuedAt": "2024-01-21T10:00:00Z",
+  "eventId": "event-uuid-2"
+}
+```
+
+**Validation Rules:**
+- All fields are optional
+- `certificateType`: Must be one of: PESERTA, KEJUARAAN, PEMATERI if provided
+- `softFile`: Must be valid URL if provided
+- `issuedAt`: Must be valid ISO 8601 date format if provided
+- `eventId`: Event must exist if provided
+- Note: `pesertaId` cannot be changed after creation
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Sertifikat berhasil diupdate",
+  "data": {
+    "id": "certificate-uuid-1",
+    "certificateNumber": "CERT-2024-001-UPDATED",
+    "certificateType": "KEJUARAAN",
+    "softFile": "https://drive.google.com/file/d/yyyyy",
+    "issuedAt": "2024-01-21T10:00:00Z",
+    "eventId": "event-uuid-2",
+    "pesertaId": "peserta-uuid",
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-22T14:30:00Z",
+    "event": {
+      "id": "event-uuid-2",
+      "name": "Kompetisi Coding",
+      "description": "Kompetisi pemrograman tingkat nasional",
+      "startDate": "2024-01-25T09:00:00Z",
+      "endDate": "2024-01-25T17:00:00Z",
+      "location": "Auditorium Utama"
+    },
+    "peserta": {
+      "id": "peserta-uuid",
+      "npm": "2106123456",
+      "nama": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa update sertifikat"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Sertifikat tidak ditemukan"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Event tidak ditemukan"
+}
+```
+
+---
+
+### 32. Delete Certificate
+
+**Endpoint:** `DELETE /certificate/:id`
+
+**Authorization:** Required (Bearer Token)
+
+**Roles:** SEKRETARIS only
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Sertifikat berhasil dihapus"
+}
+```
+
+**Error Response (403):**
+```json
+{
+  "success": false,
+  "message": "Hanya sekretaris yang bisa delete sertifikat"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "success": false,
+  "message": "Sertifikat tidak ditemukan"
+}
+```
+
+---
+
 ## Peserta Endpoints
 
-### 17. Get All Peserta
+### 33. Get All Peserta
 
 **Endpoint:** `GET /peserta`
 
@@ -975,7 +1911,6 @@ GET /peserta?role=SEKRETARIS
           "npm": "2106123456",
           "nama": "John Doe",
           "email": "john@example.com",
-          "portofolio": "https://ajibfirda.us",
           "firstLogin": false,
           "_count": {
             "attendances": 15
@@ -1004,7 +1939,7 @@ GET /peserta?role=SEKRETARIS
 
 ---
 
-### 18. Get Peserta by User ID
+### 34. Get Peserta by User ID
 
 **Endpoint:** `GET /peserta/:userId`
 
@@ -1028,7 +1963,6 @@ GET /peserta?role=SEKRETARIS
       "npm": "2106123456",
       "nama": "John Doe",
       "email": "john@example.com",
-      "portofolio": "https://ajibfirda.us",
       "firstLogin": false,
       "totalAbsensi": 15,
       "recentAttendances": [
@@ -1154,7 +2088,7 @@ GET /peserta?role=SEKRETARIS
 
 ### Register
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://localhost:2929/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "john_doe",
@@ -1168,7 +2102,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 
 ### Login
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:2929/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "john_doe",
@@ -1178,25 +2112,68 @@ curl -X POST http://localhost:5000/api/auth/login \
 
 ### Get Profile (with token)
 ```bash
-curl -X GET http://localhost:5000/api/users/profile \
+curl -X GET http://localhost:2929/api/users/profile \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Create Portfolio
+```bash
+curl -X POST http://localhost:2929/api/portfolio \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Website E-Commerce",
+    "description": "Membuat website e-commerce dengan React dan Node.js",
+    "link": "https://github.com/johndoe/ecommerce"
+  }'
 ```
 
 ### Generate QR Code
 ```bash
-curl -X POST http://localhost:5000/api/qr/generate \
+curl -X POST http://localhost:2929/api/qr/generate \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Scan QR Code
 ```bash
-curl -X POST http://localhost:5000/api/attendance/scan \
+curl -X POST http://localhost:2929/api/attendance/scan \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "token": "QR_TOKEN_HERE"
   }'
 ```
+
+### Create Event
+```bash
+curl -X POST http://localhost:2929/api/event \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Workshop Web Development",
+    "description": "Belajar membuat website dari nol",
+    "startDate": "2024-01-20T08:00:00Z",
+    "endDate": "2024-01-20T17:00:00Z",
+    "location": "Gedung A Lt. 3"
+  }'
+```
+
+### Create Certificate
+```bash
+curl -X POST http://localhost:2929/api/certificate \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "certificateNumber": "CERT-2024-001",
+    "certificateType": "PESERTA",
+    "softFile": "https://drive.google.com/file/d/xxxxx",
+    "issuedAt": "2024-01-20T10:00:00Z",
+    "eventId": "event-uuid-1",
+    "pesertaId": "peserta-uuid"
+  }'
+```
+
+---
 
 ## Notes
 
@@ -1205,6 +2182,12 @@ curl -X POST http://localhost:5000/api/attendance/scan \
 3. **Pagination**: Default page size is 50 items
 4. **Date Format**: All dates use ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
 5. **Password Security**: Passwords are hashed using bcrypt with 10 salt rounds
-6. **First Login**: `firstLogin` flag is set to `false` after peserta updates their portfolio (INI OPTIONAL AJA)
+6. **First Login**: `firstLogin` flag is set to `false` after peserta creates their first portfolio
+7. **Certificate Types**: Three types available - PESERTA (participant), KEJUARAAN (competition/championship), PEMATERI (speaker/presenter)
+8. **Portfolio**: Peserta can have multiple portfolio entries, each with title, description, and optional link
+9. **Event-Certificate Relation**: Each certificate is linked to an event and a peserta
+10. **Certificate Access**: 
+    - PESERTA can only view their own certificates
+    - SEKRETARIS can view, create, update, and delete all certificates
 
 ---

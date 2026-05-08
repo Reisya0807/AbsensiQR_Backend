@@ -40,18 +40,6 @@ class UserService {
     }
   }
 
-  async updatePortfolio(userId, portofolio) {
-    const updatedPeserta = await prisma.peserta.update({
-      where: { userId },
-      data: {
-        portofolio,
-        firstLogin: false,
-      },
-    });
-
-    return updatedPeserta;
-  }
-
   async changePassword(userId, oldPassword, newPassword) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
