@@ -1,21 +1,26 @@
-const { PrismaClient } = require('@prisma/client');
-const { hashPassword } = require('../src/utils/bcrypt');
+const { PrismaClient, Role } = require('@prisma/client');
+const { hashPassword } = require('../utils/bcrypt');
 
 const prisma = new PrismaClient();
 
 async function main() {
   try {
     const hashedPasswordAdmin = await hashPassword('admin123');
-    
-    const sekretaris = await prisma.user.create({
-      data: {
-        username: 'admin',
+    const hashedPasswordPeserta = await hashPassword('peserta123');
+
+    const sekretaris = await prisma.user.upsert({
+      where: {
+        username: '21061234567',
+      },
+      update: {},
+      create: {
+        username: '21061234567',
         password: hashedPasswordAdmin,
-        role: 'SEKRETARIS',
+        role: Role.SEKRETARIS,
         sekretaris: {
           create: {
             nama: 'Admin Sekretaris',
-            nip: '198501012010011001',
+            npm: '21061234567',
           },
         },
       },
@@ -24,19 +29,20 @@ async function main() {
       },
     });
 
-    const hashedPasswordPeserta = await hashPassword('peserta123');
-    
-    const peserta = await prisma.user.create({
-      data: {
-        username: 'johndoe',
+    const peserta = await prisma.user.upsert({
+      where: {
+        username: '2106123456',
+      },
+      update: {},
+      create: {
+        username: '2106123456',
         password: hashedPasswordPeserta,
-        role: 'PESERTA',
+        role: Role.PESERTA,
         peserta: {
           create: {
             npm: '2106123456',
             nama: 'John Doe',
             email: 'john.doe@example.com',
-            portofolio: null,
             firstLogin: true,
           },
         },
@@ -46,27 +52,19 @@ async function main() {
       },
     });
 
-    console.log('✅ Peserta created:', {
-      username: peserta.username,
-      role: peserta.role,
-      npm: peserta.peserta.npm,
-      nama: peserta.peserta.nama,
-    });
+    console.log('SEKRETARIS');
+    console.log('Username : 21061234567');
+    console.log('Password : admin123');
 
-    console.log('Seeding completed successfully!');
-    console.log('Default Users:');
     console.log('-----------------------------------');
-    console.log('SEKRETARIS:');
-    console.log('  Username: admin');
-    console.log('  Password: admin123');
-    console.log('-----------------------------------');
-    console.log('PESERTA:');
-    console.log('  Username: johndoe');
-    console.log('  Password: peserta123');
-    console.log('  NPM: 2106123456');
-    console.log('-----------------------------------');
+
+    console.log('PESERTA');
+    console.log('Username : 2106123456');
+    console.log('Password : peserta123');
+    console.log('NPM      : 2106123456');
+
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('Error seeding users:', error);
     throw error;
   }
 }
