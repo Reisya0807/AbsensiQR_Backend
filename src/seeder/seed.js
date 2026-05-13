@@ -1,4 +1,4 @@
-const { PrismaClient, Role } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const { hashPassword } = require('../utils/bcrypt');
 
 const prisma = new PrismaClient();
@@ -20,7 +20,7 @@ async function main() {
         sekretaris: {
           create: {
             nama: 'Admin Sekretaris',
-            npm: '21061234567',
+            npm: '198501012010011001',
           },
         },
       },

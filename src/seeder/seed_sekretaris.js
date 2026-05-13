@@ -16,13 +16,13 @@ function generateRandomPassword(length = 8) {
 
 const dataSekretaris = [
   { 
-    "nama": "ADMIN SEKRETARIS 1", 
-    "npm": "210000001",
+    "nama": "RAFFI FATAHILAH SUDRAJAT", 
+    "npm": "253040056",
     "username": "sekretaris1"
   },
   { 
-    "nama": "ADMIN SEKRETARIS 2", 
-    "npm": "210000002",
+    "nama": "NAILA RASHIEKA OKTAVIATRI", 
+    "npm": "253040089",
     "username": "sekretaris2"
   }
 ];
