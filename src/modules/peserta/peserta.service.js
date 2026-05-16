@@ -1,18 +1,12 @@
 const prisma = require('../../config/database');
 
+
 class PesertaService {
     async getAll(filters = {}) {
         const { search, role, page = 1, limit = 50 } = filters;
 
-        const where = {};
+        const where = { role: role || 'PESERTA' };
 
-        if (role) {
-            where.role = role;
-        } else {
-            where.role = 'PESERTA';
-        }
-
-        // Search by username, nama, npm, email
         if (search) {
             where.OR = [
                 { username: { contains: search, mode: 'insensitive' } },
@@ -44,7 +38,7 @@ class PesertaService {
                             npm: true,
                             nama: true,
                             email: true,
-                            portofolio: true,
+                            portfolios: true,
                             firstLogin: true,
                             _count: {
                                 select: { attendances: true },
@@ -122,7 +116,7 @@ class PesertaService {
                     npm: user.peserta.npm,
                     nama: user.peserta.nama,
                     email: user.peserta.email,
-                    portofolio: user.peserta.portofolio,
+                    portfolios: user.peserta.portfolios,
                     firstLogin: user.peserta.firstLogin,
                     totalAbsensi: user.peserta._count.attendances,
                     recentAttendances: user.peserta.attendances,
